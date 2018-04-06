@@ -1,0 +1,17 @@
+.area {
+    padding-top: 2%;
+}
+
+.main-content {
+    padding-top: 3%;
+}
+
+a {
+    color: #000000;
+}
+
+body {
+    background-image: url('/static/img/cat.jpg');
+    background-repeat:no-repeat; 
+    background-attachment:fixed
+}

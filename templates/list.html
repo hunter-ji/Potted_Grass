@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}
+名单
+{% endblock %}
+
+{% block js %}
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+<div class="area">
+<div class="panel panel-default animated jello">
+  <div class="panel-body">
+    <div class="table-responsive">
+        <table data-toggle="table" 
+            data-undefined-text="-" 
+            data-pagination="true" 
+            data-search="true" 
+            data-show-toggle="true" 
+            data-show-refresh="true" 
+            data-show-pagination-switch="true"
+            data-show-pagination-switch="true" 
+            data-show-columns="true" 
+            data-striped="true" 
+            data-url="/lists"
+            data-page-size=50
+            >
+            <thead>
+                <tr>
+                    <th data-field="sid">学号</th>
+                    <th data-field="name">名字</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block js2 %}
+
+{% endblock %}
