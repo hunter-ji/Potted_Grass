@@ -1,83 +1,67 @@
 <!DOCTYPE html>
-<html>
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-  <title>登陆 | GC </title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    <!-- jquery sdn -->
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- animate.css -->
+    <link rel="stylesheet" href="/static/css/animate.min.css">
+
+    <!-- font-awesome -->
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+
+    <!-- kuari.css -->
+    <link href="/static/css/kuari.css" rel="stylesheet">
 
 
-  <link rel="icon" href="/static/img/icon.png">
-  <!-- Core stylesheet files. REQUIRED -->
-  <!-- Bootstrap -->
-  <link rel="stylesheet" href="/static/assets/vendor/bootstrap/css/bootstrap.css">
-
-  <!-- Font Awesome -->
-  <!-- WARNING: Font Awesome doesn't work if you view the page via file:// -->
-  <link rel="stylesheet" href="/static/assets/vendor/font-awesome/css/font-awesome.css">
-
-  <!-- animate.css -->
-  <link rel="stylesheet" href="/static/assets/vendor/animate.css/animate.css">
-  <!-- END: core stylesheet files -->
-  <!-- Theme main stlesheet files. REQUIRED -->
-  <link rel="stylesheet" href="/static/assets/css/chl.css">
-  <link rel="stylesheet" href="/static/assets/css/theme-peter-river.css">
-  <!-- END: theme main stylesheet files -->
- <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
-
-  <style media="screen">
-    .app {
-        background-image: url("/static/img/bg2.jpg");
-      background-repeat: no-repeat;
-      background-size: cover;
-    }
-
-  </style>
 </head>
 
-<body class="bg-clouds">
-  <div class="app">
-    <div class="app-login">
-      <div class="text-center box shadow-5 animated fadeInLeft b-r-4 p-a-20">
-        <h1 class="f-4 m-a-0">Gotted Class</h1>
-        <h4>请登陆</h4>
-        <form class="text-left" role="form" action="{{ url_for('login') }}" method=post>
-          <div class="form-group has-feedback">
-            <input class="form-control" placeholder="用户名" type="text" name="username">
-            <span class="form-control-feedback">
-              <i class="fa fa-fw fa-user-circle"></i>
-            </span>
+<body>
+<div class="container area">
+    <div class="main-title animated fadeInLeft">
+        <h1>登录界面的标题</h1>
+    </div>    
+    <div class="main center-block">
+        <!-- 面板 -->
+        <div class="panel panel-default animated fadeInLeft">
+          <div class="panel-body">
+              <h3 class="text-center">登录</h3>
+              <br>
+            <!-- 表单 -->
+            <form role="form" action="{{ url_for('login') }}" method=post>
+              <div class="form-group">
+                <input type="text" class="form-control" id="exampleInputUsername1" placeholder="用户名" name="username">
+              </div>
+              <div class="form-group">
+                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="密码" name="password">
+              </div>
+              <button style="width: 100%;" type="submit" class="btn btn-primary">登录</button>
+            <p class="forget-ps">
+                <a href="javascript:alert('自己好好想一想...');"><small>忘记密码?</small></a>
+            </p>
+            </form>
+            <!-- 表单结束 -->
           </div>
-          <div class="form-group has-feedback">
-            <input class="form-control" placeholder="密码" type="password" name="password">
-            <span class="form-control-feedback">
-              <i class="fa fa-fw fa-key"></i>
-            </span>
-          </div>
-          <button type="submit" class="btn btn-primary btn-block m-b-15">登陆</button>
-        <p class="text-right">
-          <a href="javascript:alert('自己好好想一想...');">
-            <small>忘记密码?</small>
-          </a>
-          </p>        
-          </form>
           {% if error %} 
             <div class="alert alert-danger" role="alert">
                 <p class=error><strong>Error:</strong> {{ error }}
             </div>
           {% endif %}
-      </div>
+        </div>
+        <!-- 面板结束 -->
     </div>
+</div>
 
-  </div>
-
-  <!-- Core javascript files. REQUIRED -->
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="http://localhost:8081/static/assets/vendor/jquery/jquery.js"></script>
-
-  <!-- Bootstrap -->
-  <script src="http://localhost:8081/static/assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script>
+</script>
 </body>
-</html>
+
