@@ -16,6 +16,10 @@ body {
     padding-top: 11%;
 }
 
+.main {
+    width: 40%;
+}
+
 .main-title {
     padding-bottom: 3%;
     text-align: center;
