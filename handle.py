@@ -6,6 +6,7 @@ import sqlite3
 import json
 import time
 import re
+import base64
 
 # 存储运行的数据
 # Data = {
@@ -74,8 +75,8 @@ def checkWORK(work_id, path, sid, filename):
             # code = "".join(lines)
             lines = f.readlines() 
             lines = [re.sub("\'", "\"", line) for line in lines]
-            lines = [re.sub("\:", "\\\:", line) for line in lines]
             lines = "".join(lines)
+            lines = base64.b64encode(lines.encode("utf-8")).decode()
         result = {
                 "info": "1",
                 "message":"函数运行错误",

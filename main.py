@@ -18,6 +18,7 @@ class MAIN:
         for row in data:
             path = self.path + "/" + str( row ) + "/" + filename
             os.system("cp -rf moudle %s"%(path))
+            print("create dir %s"%(path))
 
     # 处理数据保存进数据库
     def handleDATA(self):

@@ -6,9 +6,11 @@ import os
 import sqlite3
 import re
 import time
+import base64
 from multiprocessing import Pool
 from main import MAIN
 from handle import checkWORK
+from pprint import pprint
 
 DATABASE = 'class.db'
 SECRET_KEY = os.urandom(24)
@@ -64,7 +66,7 @@ def table(wid):
             result = statuss2[info["sid"]]
             result = re.sub("\'", "\"", result)
             result = json.loads(result)
-            result = result[str( len(result.keys()) )]["result"]
+            result = result[str(len(result.keys()))]["result"]
             d = "输出 : %s</p>"%(str(result))
         else:
             d = "未检查"
@@ -134,11 +136,14 @@ def details(work_id, sid):
     s = [dict(id=row[0], sid=row[1], sname=row[2]) for row in s.fetchall()][0]
     content = g.db.execute("select content from status where work_id = ? and sid = ?",[work_id, sid])
     content = [row[0] for row in content.fetchall()][0]
-#    content = re.sub("\'", "\"", content)
+    content = re.sub("\'", "\"", content)
     data = json.loads(content)
     content = []
     for i in data:
-        L = {} 
+        L = {}
+        if "code" in data[i]:
+            code = data[i]["code"]
+            data[i]["code"] = base64.b64decode(code).decode()
         L[i] = data[i]
         content.append(L)
     return render_template("details.html", w=w, s=s, content=content)

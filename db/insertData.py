@@ -6,7 +6,7 @@ import os
 db = sqlite3.connect("class.db",check_same_thread = False)
 
 for id in range(1,9):
-    sid = "178093021" + str(id)
+    sid = "1508093021" + str(id)
     sname = "同学" + str(id)
     db.execute("insert into students (sid, sname) values (?,?)",[sid, sname])
     db.commit()
@@ -19,3 +19,10 @@ for id in range(1,9):
         print ("创建文件夹%s成功"%sid)
     except:
         print ("创建文件夹%s失败"%sid)
+
+try:
+    db.execute("insert into users (username, password) values ('admin', 'admin')")
+    db.commit()
+    print("创建管理员admin成功")
+except:
+    print("创建管理员admin失败")
