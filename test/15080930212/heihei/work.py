@@ -2,5 +2,6 @@
 # -*- coding: utf-8 -*-
 
 def heihei():
-    jjjj
+    print ("heihei")
+    print ("aaaaaa")
     return "test"

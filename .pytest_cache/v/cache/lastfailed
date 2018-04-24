@@ -1,0 +1,7 @@
+{
+  "check/test_work2.py": true,
+  "check/test_work3.py::test_work": true,
+  "check/test_work6.py": true,
+  "heiheihei/test_work.py": true,
+  "test_work.py::test_work": true
+}

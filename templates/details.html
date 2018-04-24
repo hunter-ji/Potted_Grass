@@ -34,15 +34,34 @@
                 {% for i in con %}
                     <h4>第{{ i }}次检查</h4>
                     <h4>时间为 : {{ con[i]["time"] }}</h4>
-                    <h4>程序运行状态为 : {{ con[i]["message"] }}</h4>
                     {% if con[i]["info"] == "1" %}
+                        <h4>运行状态: </h4>
+                        <pre>失败</pre>
                         <h4>程序报错:  </h4>
-                        <pre>{{ con[i]["error"] }}</pre>
-                        <h4>程序代码为 :</h4>
+                        <pre>{{ con[i]["message"] }}</pre>
+                        <h4>详细报错为 :</h4>
+                        <pre>{{ con[i]["result"] }}</pre>
+                        <h4>代码: </h4>
                         <pre>{{ con[i]["code"] }}</pre>
                     {% elif con[i]["info"] == "2" %}
+                        <h4>运行状态: </h4>
+                        <pre>成功</pre>
                         <h4>程序运行结果: </h4>
                         <pre>{{ con[i]["result"] }}</pre>
+                    {% elif con[i]["info"] == "0" %}
+                        <h4>运行状态: </h4>
+                        <pre>错误</pre>
+                        <h4>程序报错:  </h4>
+                        <pre>{{ con[i]["message"] }}</pre>
+                        <h4>详细报错: </h4>
+                        <pre>{{ con[i]["result"] }}</pre>
+                        <h4>代码: </h4>
+                        <pre>{{ con[i]["code"] }}</pre>
+                    {% elif con[i]["info"] == "3" %}
+                        <h4>运行状态: </h4>
+                        <pre>找不到文件</pre>
+                        <h4>程序报错:  </h4>
+                        <pre>{{ con[i]["message"] }}</pre>
                     {% endif %}
                 {% endfor %}
                 <br />

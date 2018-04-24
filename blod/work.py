@@ -5,7 +5,7 @@ def heihei(aaa):
     print("hhhhhh")
     print("11111111")
     aaa = aaa * 2
-    aaa = bb * 2
+    aa = bb * 2
     print("22222222")
     print("33333333")
     return aaa

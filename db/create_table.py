@@ -34,7 +34,7 @@ time char(20)
 conn.execute('''
 create table status(
 id integer primary key autoincrement,
-work_id int,
+wid int,
 sid int,
 status int,
 content text
