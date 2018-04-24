@@ -12,7 +12,7 @@
 {% block main %}
 
 <div class="container">
-{% if error %} 
+{% if error %}
 <div class="alert alert-danger" role="alert">
     <p class=error><strong>Error:</strong> {{ error }}
 </div>
@@ -30,7 +30,7 @@
         作业发布
         <div class="pull-right">
             <p><a id="open" href="javascript:;"><i id="ii" class="fa fa-chevron-down" aria-hidden="true"></i> </a></p>
-        </div> 
+        </div>
     </div>
   <div id="panel" class="panel-body" style="display:none;">
         <form role="form" action="{{ url_for('issuetask') }}" method=post>
@@ -45,13 +45,8 @@
           </div>
 
           <div class="form-group">
-            <label for="exampleInputText">参数(以逗号分隔)+类型(以#与参数区分)</label>
-            <input type="text" class="form-control" id="exampleInputText" placeholder="1,2,3#int" name="parameter">
-          </div>
-
-          <div class="form-group">
-            <label for="exampleInputText">预想结果+类型(以#与结果区分)</label>
-            <input type="text" class="form-control" id="exampleInputText" placeholder="8#int" name="result">
+            <label for="exampleInputText">断言</label>
+            <input type="text" class="form-control" id="exampleInputText" placeholder="assert w.heihei() == 'test'" name="parameter">
           </div>
 
           <button type="submit" class="btn btn-info">发布</button>
@@ -66,7 +61,7 @@
 
 {% for d in data %}
 <div class="panel panel-default animated fadeInUp">
-    <div class="panel-heading">作业: {{ d.name }} 
+    <div class="panel-heading">作业: {{ d.name }}
       <div class="pull-right">
           <p><a id="{{ d.name }}" href="javascript:;" onclick=openit(this)><i id="i{{ d.name }}" class="fa fa-chevron-down" aria-hidden="true"></i> </a></p>
       </div>
@@ -74,16 +69,16 @@
     <div class="panel-body" style="display:none;" id="panel{{ d.name }}">
         <button class="btn btn-info" id={{ d.id }} onclick=checkit(this)>检测</button>
     <div class="table-responsive">
-        <table data-toggle="table" 
-            data-undefined-text="-" 
-            data-pagination="true" 
-            data-search="true" 
-            data-show-toggle="true" 
-            data-show-refresh="true" 
+        <table data-toggle="table"
+            data-undefined-text="-"
+            data-pagination="true"
+            data-search="true"
+            data-show-toggle="true"
+            data-show-refresh="true"
             data-show-pagination-switch="true"
-            data-show-pagination-switch="true" 
-            data-show-columns="true" 
-            data-striped="true" 
+            data-show-pagination-switch="true"
+            data-show-columns="true"
+            data-striped="true"
             data-url="/table/{{ d.id }}"
             data-page-size=25
             >
@@ -147,7 +142,7 @@ function checkit(obj) {
         type: 'POST',
         data: JSON.stringify(data),
         contentType: 'application/json; charset=UTF-8',
-        url: '/handle',						
+        url: '/handle',
         success: function(data) {
             console.log('success');
             window.location.href="{{ url_for('index') }}"

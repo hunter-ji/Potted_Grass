@@ -1,4 +1,5 @@
 {
+  "check/test_work1.py::test_work": true,
   "check/test_work2.py": true,
   "check/test_work3.py::test_work": true,
   "check/test_work6.py": true,

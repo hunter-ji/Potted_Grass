@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-def heihei():
-
-    return "test"
+def heihei(a, b):
+    return a+b

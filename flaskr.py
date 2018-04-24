@@ -89,17 +89,15 @@ def table(wid):
 # 发布作业
 @app.route("/issuetask/", methods=["POST"])
 def issuetask():
+    error = None
     if not session.get('logged_in'):
         return redirect("login")
     name = request.form["name"]
     filename = request.form["filename"]
     parameter = request.form["parameter"]
-    if parameter:
-        if "，" in parameter:
-            parameter = parameter.replace("，", ",")
-        elif parameter[len(parameter)-1:] == ",":
-            parameter = parameter[:len(parameter)-1]
-    result = request.form["result"]
+    if not parameter:
+        error = "'Invalid parameter'"
+        return render_template("index.html", error=error)
     logtime = time.strftime('%Y-%m-%d %H:%M:%S')
     g.db.execute("insert into works (name, filename, time) values (?, ?, ?)", [name, filename, logtime])
     g.db.commit()
@@ -117,12 +115,7 @@ def issuetask():
     g.db.commit()
 
     # 组成检查作业的脚本
-    if parameter:
-        ass = "assert w.heihei(%s) == '%s'"
-        ass = ass%(parameter, result)
-    else:
-        ass = "assert w.heihei() == '%s'"
-        ass = ass%(result)
+    parameter = re.sub("\"", "\'", parameter)
     code = [
             "#!/usr/bin/python",
             "# -*- coding: utf-8 -*-",
@@ -132,7 +125,7 @@ def issuetask():
             "w = imp.load_source('work', path+'/work.py')",
             "def test_work():",
     ]
-    code.append("    " + ass)
+    code.append("    " + parameter)
     check_file = "check/test_work%s.py"%(str(data))
     with open(check_file, "w") as f:
         f.write("\n".join(code))
