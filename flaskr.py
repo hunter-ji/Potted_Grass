@@ -187,11 +187,12 @@ def login():
         password = request.form["password"]
         cur = g.db.execute("select username from users")
         usernames = [row[0] for row in cur.fetchall()]
-        cur2 = g.db.execute("select password from users where username = ?",[username])
-        the_password = [row[0] for row in cur2.fetchall()][0]
         if username not in usernames:
             error = 'Invalid username'
-        elif password != the_password:
+            return render_template('login.html', error=error)
+        cur2 = g.db.execute("select password from users where username = ?",[username])
+        the_password = [row[0] for row in cur2.fetchall()][0]
+        if password != the_password:
             error = 'Invalid password'
         else:
             session['logged_in'] = True
