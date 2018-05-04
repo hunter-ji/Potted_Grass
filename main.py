@@ -20,12 +20,14 @@ class MAIN:
             os.system("cp -rf moudle %s"%(path))
             print("create dir %s"%(path))
 
-    # 处理数据保存进数据库
-    def handleDATA(self):
-        pass
-
+    # 删除作业
+    def delWork(self, filename):
+        data = self.data
+        for row in data:
+            path = self.path + "/" + str( row ) + "/" + filename
+            os.system("rm -rf %s"%(path))
+            print("delete dir %s"%(path))
 
 if __name__ == "__main__":
     m = MAIN("test")
-    sids = ["aa", "bb", "cc"]
-    m.Process(sids)
+    m.delWork("ddd")

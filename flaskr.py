@@ -94,6 +94,8 @@ def issuetask():
         return redirect("login")
     name = request.form["name"]
     filename = request.form["filename"]
+    if not filename:
+        filename = name
     parameter = request.form["parameter"]
     if not parameter:
         error = "'Invalid parameter'"
@@ -229,6 +231,21 @@ def handle():
     pool.join()
     return redirect(url_for("index"))
 
+# 删除作业
+@app.route("/deletework", methods=["POST"])
+def deletework():
+    data = request.get_data()
+    theid = int(json.loads(data)['id'])
+    print(theid)
+
+    cur = g.db.execute("select filename from works where id = ?",[theid])
+    filename = [row[0] for row in cur.fetchall()][0]
+    MAIN("test").delWork(filename)
+
+    g.db.execute("delete from works where id = ?",[theid])
+    g.db.execute("delete from status where wid = ?",[theid])
+    g.db.commit()
+    return jsonify({"info":"success"}) 
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)

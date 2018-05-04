@@ -33,3 +33,7 @@ body {
     padding-top: 3%;
     text-align: right;
 }
+
+.half-container {
+    width: 50%;
+}
