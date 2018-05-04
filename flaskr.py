@@ -57,16 +57,30 @@ def table(wid):
         statuss2[row["sid"]] = row["content"]
     data = []
     for info in works:
+        # 例如 status = 2
         status = str(statuss1[info["sid"]])
         if status == "0":
             d = "<p class='text-danger'>运行错误</p>"
+            result = statuss2[info["sid"]]
+            result = re.sub("\'", "\"", result)
+            result = json.loads(result)
+            lencode = result[str(len(result.keys()))]["lencode"]
+            info["lencode"] = lencode
         elif status == "1":
             d = "<p class='text-warning'>运行失败</p>"
+            result = statuss2[info["sid"]]
+            result = re.sub("\'", "\"", result)
+            result = json.loads(result)
+            lencode = result[str(len(result.keys()))]["lencode"]
+            info["lencode"] = lencode
         elif status == "2":
             result = statuss2[info["sid"]]
             result = re.sub("\'", "\"", result)
             result = json.loads(result)
-            result = result[str(len(result.keys()))]["result"]
+            r = result[str(len(result.keys()))]
+            result = r["result"]
+            lencode = r["lencode"]
+            info["lencode"] = lencode
             result = base64.b64decode(result).decode()
             d = "输出 : %s</p>"%(str(result))
         elif status == "3":
@@ -74,6 +88,8 @@ def table(wid):
         else:
             d = "未检查"
         details = "<a target='_black' href='/details/%s/%s/'>%s</a>"%(str(wid), str(info["sid"]), d)
+        if d == "未检查":
+            details = d
         info["details"] = details
         data.append(info)
 #      data = [

@@ -50,6 +50,16 @@ def checkWORK(wid, path, sid, sdirname):
             i += 1
         l = len(L)
         result = L[l-1][3:-17]
+        # 读取代码
+        with open(path + "/work.py") as f: # type(lines) = list()
+            # code = "".join(lines)
+            lines = f.readlines()
+            lines = [re.sub("\'", "\"", line) for line in lines]
+            # 计算行数,并且除去空白行数
+            len_thecode = [line for line in lines if line != '\n']
+            len_code = len(len_thecode)
+            lines = "".join(lines)
+            lines = base64.b64encode(lines.encode("utf-8")).decode()
         if result == "failed":
             outputs = [L[i] for i in L if i > 11 and i < (len(L)-2)]
             result = "\n".join(outputs)
@@ -57,19 +67,12 @@ def checkWORK(wid, path, sid, sdirname):
             message = "".join(log)
             message = re.sub("\'", "\"", message)
 
-            # 记录代码
-            with open(path + "/work.py") as f: # type(lines) = list()
-                # code = "".join(lines)
-                lines = f.readlines()
-                lines = [re.sub("\'", "\"", line) for line in lines]
-                lines = "".join(lines)
-                lines = base64.b64encode(lines.encode("utf-8")).decode()
-
             results = {
                     "info": "1",
                     "message": de(message),
                     "result": de(result),
                     "code": de(lines),
+                    "lencode": str(len_code),
                     "time": logtime
             }
     #        return results
@@ -85,10 +88,13 @@ def checkWORK(wid, path, sid, sdirname):
             result = "\n".join(outputs)
             if "passed" in result and "seconds" in result:
                 result = "无输出"
+
             results = {
                     "info": "2",
                     "message": de(message),
                     "result": de(result),
+                    "code": de(lines),
+                    "lencode": str(len_code),
                     "time": logtime
             }
     #        return results
@@ -100,19 +106,12 @@ def checkWORK(wid, path, sid, sdirname):
             message = "".join(log)
             message = re.sub("\'", "\"", message)
 
-            # 记录代码
-            with open(path + "/work.py") as f: # type(lines) = list()
-                # code = "".join(lines)
-                lines = f.readlines()
-                lines = [re.sub("\'", "\"", line) for line in lines]
-                lines = "".join(lines)
-                lines = base64.b64encode(lines.encode("utf-8")).decode()
-
             results = {
                     "info": "0",
                     "message": de(message),
                     "result": de(result),
                     "code": de(lines),
+                    "lencode": str(len_code),
                     "time": logtime
             }
     #        return results

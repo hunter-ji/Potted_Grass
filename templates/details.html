@@ -43,11 +43,17 @@
                         <pre>{{ con[i]["result"] }}</pre>
                         <h4>代码: </h4>
                         <pre>{{ con[i]["code"] }}</pre>
+                        <h4>行数: </h4>
+                        <pre>{{ con[i]["lencode"] }}</pre>
                     {% elif con[i]["info"] == "2" %}
                         <h4>运行状态: </h4>
                         <pre>成功</pre>
                         <h4>程序运行结果: </h4>
                         <pre>{{ con[i]["result"] }}</pre>
+                        <h4>代码: </h4>
+                        <pre>{{ con[i]["code"] }}</pre>
+                        <h4>行数: </h4>
+                        <pre>{{ con[i]["lencode"] }}</pre>
                     {% elif con[i]["info"] == "0" %}
                         <h4>运行状态: </h4>
                         <pre>错误</pre>
@@ -57,6 +63,8 @@
                         <pre>{{ con[i]["result"] }}</pre>
                         <h4>代码: </h4>
                         <pre>{{ con[i]["code"] }}</pre>
+                        <h4>行数: </h4>
+                        <pre>{{ con[i]["lencode"] }}</pre>
                     {% elif con[i]["info"] == "3" %}
                         <h4>运行状态: </h4>
                         <pre>找不到文件</pre>
