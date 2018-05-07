@@ -5,7 +5,9 @@
 {% endblock %}
 
 {% block js %}
-
+<!-- highlight.js -->
+<link rel="stylesheet" href="/static/styles/github.css">
+<script src="/static/js/highlight.pack.js"></script>
 {% endblock %}
 
 {% block main %}
@@ -38,30 +40,38 @@
                         <h4>运行状态: </h4>
                         <pre>失败</pre>
                         <h4>程序报错:  </h4>
-                        <pre>{{ con[i]["message"] }}</pre>
+                        <pre><code class="bash">{{ con[i]["message"] }}</code></pre>
                         <h4>详细报错为 :</h4>
-                        <pre>{{ con[i]["result"] }}</pre>
+                        <pre><code class="bash">{{ con[i]["result"] }}</code></pre>
                         <h4>代码: </h4>
-                        <pre>{{ con[i]["code"] }}</pre>
+                        <pre><code class="python">{{ con[i]["code"] }}</code></pre>
+                        <h4>行数: </h4>
+                        <pre>{{ con[i]["lencode"] }}</pre>
                     {% elif con[i]["info"] == "2" %}
                         <h4>运行状态: </h4>
                         <pre>成功</pre>
                         <h4>程序运行结果: </h4>
                         <pre>{{ con[i]["result"] }}</pre>
+                        <h4>代码: </h4>
+                        <pre><code class="python">{{ con[i]["code"] }}</code></pre>
+                        <h4>行数: </h4>
+                        <pre>{{ con[i]["lencode"] }}</pre>
                     {% elif con[i]["info"] == "0" %}
                         <h4>运行状态: </h4>
                         <pre>错误</pre>
                         <h4>程序报错:  </h4>
-                        <pre>{{ con[i]["message"] }}</pre>
+                        <pre><code class="bash">{{ con[i]["message"] }}</code></pre>
                         <h4>详细报错: </h4>
-                        <pre>{{ con[i]["result"] }}</pre>
+                        <pre><code class="bash">{{ con[i]["result"] }}</code></pre>
                         <h4>代码: </h4>
-                        <pre>{{ con[i]["code"] }}</pre>
+                        <pre><code class="python">{{ con[i]["code"] }}</code></pre>
+                        <h4>行数: </h4>
+                        <pre>{{ con[i]["lencode"] }}</pre>
                     {% elif con[i]["info"] == "3" %}
                         <h4>运行状态: </h4>
                         <pre>找不到文件</pre>
                         <h4>程序报错:  </h4>
-                        <pre>{{ con[i]["message"] }}</pre>
+                        <pre><code class="bash">{{ con[i]["message"] }}</code></pre>
                     {% endif %}
                 {% endfor %}
                 <br />
@@ -73,4 +83,5 @@
 {% endblock %}
 
 {% block js2 %}
+<script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}
