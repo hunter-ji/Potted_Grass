@@ -11,75 +11,78 @@
 {% endblock %}
 
 {% block main %}
-<div class="area">
-    <div class="panel panel-default animated fadeInUp">
-        <div class="panel-body">
-            <div class="page-header">
-                <h3>作业信息</h3>
+    <div class="container main-content">
+        <div class="area">
+            <div class="panel panel-default animated fadeInUp">
+                <div class="panel-body">
+                    <div class="page-header">
+                        <h3>作业信息</h3>
+                    </div>
+                    <h5>学生: {{ s.sname }}</h5>
+                    <h5>学号: {{ s.sid }}</h5>
+                    <h5>班级: {{ s.sclass }}</h5>
+                    <h5>作业名称: {{ w.name }}</h5>
+                    <h5>作业发布时间: {{ w.time }}</h5>
+                </div>
             </div>
-            <h5>学生: {{ s.sname }}</h5>
-            <h5>学号: {{ s.sid }}</h5>
-            <h5>作业名称: {{ w.name }}</h5>
-            <h5>作业发布时间: {{ w.time }}</h5>
         </div>
-    </div>
-</div>
 
-<div class="area">
-    <div class="panel panel-default animated fadeInUp">
-        <div class="panel-body">
-            <div class="page-header">
-                <h3>作业完成信息</h3>
-            </div>
-            <div id="thedetails"></div>
-            {% for con in content %}
-                {% for i in con %}
-                    <h4>第{{ i }}次检查</h4>
-                    <h4>时间为 : {{ con[i]["time"] }}</h4>
-                    {% if con[i]["info"] == "1" %}
-                        <h4>运行状态: </h4>
+        <div class="area">
+            <div class="panel panel-default animated fadeInUp">
+                <div class="panel-body">
+                    <div class="page-header">
+                        <h3>作业完成信息</h3>
+                    </div>
+                    <div id="thedetails"></div>
+                    {% for con in content %}
+                        {% for i in con %}
+                            <h4>第{{ i }}次检查</h4>
+                            <h4>时间为 : {{ con[i]["time"] }}</h4>
+                            {% if con[i]["info"] == "1" %}
+                                <h4>运行状态: </h4>
                         <pre>失败</pre>
-                        <h4>程序报错:  </h4>
+                                <h4>程序报错:  </h4>
                         <pre><code class="bash">{{ con[i]["message"] }}</code></pre>
-                        <h4>详细报错为 :</h4>
+                                <h4>详细报错为 :</h4>
                         <pre><code class="bash">{{ con[i]["result"] }}</code></pre>
-                        <h4>代码: </h4>
+                                <h4>代码: </h4>
                         <pre><code class="python">{{ con[i]["code"] }}</code></pre>
-                        <h4>行数: </h4>
+                                <h4>行数: </h4>
                         <pre>{{ con[i]["lencode"] }}</pre>
-                    {% elif con[i]["info"] == "2" %}
-                        <h4>运行状态: </h4>
+                            {% elif con[i]["info"] == "2" %}
+                                <h4>运行状态: </h4>
                         <pre>成功</pre>
-                        <h4>程序运行结果: </h4>
+                                <h4>程序运行结果: </h4>
                         <pre>{{ con[i]["result"] }}</pre>
-                        <h4>代码: </h4>
+                                <h4>代码: </h4>
                         <pre><code class="python">{{ con[i]["code"] }}</code></pre>
-                        <h4>行数: </h4>
+                                <h4>行数: </h4>
                         <pre>{{ con[i]["lencode"] }}</pre>
-                    {% elif con[i]["info"] == "0" %}
-                        <h4>运行状态: </h4>
+                            {% elif con[i]["info"] == "0" %}
+                                <h4>运行状态: </h4>
                         <pre>错误</pre>
-                        <h4>程序报错:  </h4>
+                                <h4>程序报错:  </h4>
                         <pre><code class="bash">{{ con[i]["message"] }}</code></pre>
-                        <h4>详细报错: </h4>
+                                <h4>详细报错: </h4>
                         <pre><code class="bash">{{ con[i]["result"] }}</code></pre>
-                        <h4>代码: </h4>
+                                <h4>代码: </h4>
                         <pre><code class="python">{{ con[i]["code"] }}</code></pre>
-                        <h4>行数: </h4>
+                                <h4>行数: </h4>
                         <pre>{{ con[i]["lencode"] }}</pre>
-                    {% elif con[i]["info"] == "3" %}
-                        <h4>运行状态: </h4>
+                            {% elif con[i]["info"] == "3" %}
+                                <h4>运行状态: </h4>
                         <pre>找不到文件</pre>
-                        <h4>程序报错:  </h4>
+                                <h4>程序报错:  </h4>
                         <pre><code class="bash">{{ con[i]["message"] }}</code></pre>
-                    {% endif %}
-                {% endfor %}
-                <br />
-                <hr />
-            {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                        <br />
+                        <hr />
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
 {% block js2 %}

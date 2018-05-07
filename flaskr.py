@@ -30,9 +30,11 @@ def teardown_request(exception):
     g.db.commit()
     g.db.close()
 
-@app.route("/ttt/")
-def ttt():
-    return render_template("ttt.html")
+@app.route("/testpage/")
+def testpage():
+    cur = g.db.execute("select * from works order by id desc limit 3")
+    data = [dict(id=row[0], name=row[1], filename=row[2], time=row[3]) for row in cur.fetchall()]
+    return render_template("testpage.html", data=data)
 
 # 首页
 @app.route("/")
@@ -41,7 +43,34 @@ def index():
         return redirect("login")
     cur = g.db.execute("select * from works order by id desc limit 3")
     data = [dict(id=row[0], name=row[1], filename=row[2], time=row[3]) for row in cur.fetchall()]
-    return render_template("index.html", data=data)
+    page = {
+            "older": "none",
+            "newer": 1
+            }
+    return render_template("index.html", data=data, page=page)
+
+# 分页
+@app.route('/page/<int:num>/')
+def page(num):
+    if not session.get('logged_in'):
+        return redirect("login")
+    if num == 0:
+        return redirect(url_for('index'))
+    elif num > 0:
+        pagenum = num * 3
+        cur = g.db.execute("select * from works order by id desc limit ?, 3",[pagenum])
+        data = [dict(id=row[0], name=row[1], filename=row[2], time=row[3]) for row in cur.fetchall()]
+        if num == 0:
+            older = 'none'
+        else:
+            older = num - 1
+        page = {
+                "older": older,
+                "newer": num + 1
+                }
+        return render_template('index.html', data=data, page=page)
+    else:
+        return render_template('404.html')
 
 # 获取每次作业情况
 @app.route("/table/<int:wid>/", methods=["GET", "POST"])
@@ -229,6 +258,7 @@ def logout():
     session.pop('username')
     return redirect(url_for('index'))
 
+# 404页面
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404

@@ -10,98 +10,106 @@
 {% endblock %}
 
 {% block main %}
-    <div class="half-container">
-        {% if error %}
-            <div class="alert alert-danger" role="alert">
-                <p class=error><strong>Error:</strong> {{ error }}
-                </div>
-            {% endif %}
-        </div>
+    <div class="container main-content">
+        <div class="container">
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    <p class=error><strong>Error:</strong> {{ error }}
+                    </div>
+                {% endif %}
+            </div>
 
-        <div class="area">
+            <div class="area">
+                <div class="page-header animated fadeInUp">
+                    <img src="/static/img/release.png" class="img-responsive" alt="Release">
+                </div>
+
+
+                <div class="panel panel-default animated fadeInUp">
+                    <div class="panel-heading">
+                        作业发布
+                        <div class="pull-right">
+                            <p><a id="open" href="javascript:;"><i id="ii" class="fa fa-chevron-down" aria-hidden="true"></i> </a></p>
+                        </div>
+                    </div>
+                    <div id="panel" class="panel-body" style="display:none;">
+                        <form role="form" action="{{ url_for('issuetask') }}" method=post>
+                            <div class="form-group">
+                                <label for="exampleInputText">作业名称</label>
+                                <input type="text" class="form-control" id="exampleInputText" placeholder="exmaple_work_name" name="name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="exampleInputText">文件名</label>
+                                <input type="text" class="form-control" id="exampleInputText" placeholder="example_filename" name="filename">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="exampleInputText">断言</label>
+                                <input type="text" class="form-control" id="exampleInputText" placeholder="assert w.heihei() == 'test'" name="parameter">
+                            </div>
+
+                            <button type="submit" class="btn btn-info">发布</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <div class="page-header animated fadeInUp">
-                <img src="/static/img/release.png" class="img-responsive" alt="Release">
+                <img src="/static/img/details.png" class="img-responsive" alt="Details">
             </div>
 
-
-            <div class="panel panel-default animated fadeInUp">
-                <div class="panel-heading">
-                    作业发布
-                    <div class="pull-right">
-                        <p><a id="open" href="javascript:;"><i id="ii" class="fa fa-chevron-down" aria-hidden="true"></i> </a></p>
-                    </div>
-                </div>
-                <div id="panel" class="panel-body" style="display:none;">
-                    <form role="form" action="{{ url_for('issuetask') }}" method=post>
-                        <div class="form-group">
-                            <label for="exampleInputText">作业名称</label>
-                            <input type="text" class="form-control" id="exampleInputText" placeholder="exmaple_work_name" name="name">
+            {% for d in data %}
+                <div class="panel panel-default animated fadeInUp">
+                    <div class="panel-heading">作业: {{ d.name }}
+                        <div class="pull-right">
+                            <p><a id="{{ d.name }}" href="javascript:;" onclick=openit(this)><i id="i{{ d.name }}" class="fa fa-chevron-down" aria-hidden="true"></i> </a></p>
                         </div>
-
-                        <div class="form-group">
-                            <label for="exampleInputText">文件名</label>
-                            <input type="text" class="form-control" id="exampleInputText" placeholder="example_filename" name="filename">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="exampleInputText">断言</label>
-                            <input type="text" class="form-control" id="exampleInputText" placeholder="assert w.heihei() == 'test'" name="parameter">
-                        </div>
-
-                        <button type="submit" class="btn btn-info">发布</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="page-header animated fadeInUp">
-            <img src="/static/img/details.png" class="img-responsive" alt="Details">
-        </div>
-
-        {% for d in data %}
-            <div class="panel panel-default animated fadeInUp">
-                <div class="panel-heading">作业: {{ d.name }}
-                    <div class="pull-right">
-                        <p><a id="{{ d.name }}" href="javascript:;" onclick=openit(this)><i id="i{{ d.name }}" class="fa fa-chevron-down" aria-hidden="true"></i> </a></p>
                     </div>
-                </div>
-                <div class="panel-body" style="display:none;" id="panel{{ d.name }}">
-                    <button class="btn btn-info" id={{ d.id }} onclick=checkit(this)>检测</button>
-                    <button class="btn btn-danger" id={{ d.id }} onclick=deleteit(this)>删除</button>
-                    <div class="table-responsive">
-                        <table data-toggle="table"
-                            data-undefined-text="-"
-                            data-pagination="true"
-                            data-search="true"
-                            data-show-toggle="true"
-                            data-show-refresh="true"
-                            data-show-pagination-switch="true"
-                            data-show-pagination-switch="true"
-                            data-show-columns="true"
-                            data-striped="true"
-                            data-url="/table/{{ d.id }}"
-                            data-page-size=25
-                            >
-                            <thead>
-                                <tr>
-                                    <th data-field="sid">学号</th>
-                                    <th data-field="name">名字</th>
-                                    <th data-field="lencode">行数</th>
-                                    <th data-field="details">详情</th>
-                                </tr>
-                            </thead>
-                        </table>
+                    <div class="panel-body" style="display:none;" id="panel{{ d.name }}">
+                        <button class="btn btn-info" id={{ d.id }} onclick=checkit(this)>检测</button>
+                        <button class="btn btn-danger" id={{ d.id }} onclick=trydeleteit(this)>删除</button>
+                        <div class="table-responsive">
+                            <table data-toggle="table"
+                                data-undefined-text="-"
+                                data-pagination="true"
+                                data-search="true"
+                                data-show-toggle="true"
+                                data-show-refresh="true"
+                                data-show-pagination-switch="true"
+                                data-show-pagination-switch="true"
+                                data-show-columns="true"
+                                data-striped="true"
+                                data-url="/table/{{ d.id }}"
+                                data-page-size=25
+                                >
+                                <thead>
+                                    <tr>
+                                        <th data-field="sid">学号</th>
+                                        <th data-field="name">名字</th>
+                                        <th data-field="lencode">行数</th>
+                                        <th data-field="details">详情</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
+                    <!-- List group -->
+                    <ul class="list-group">
+                        <li class="list-group-item">文件: {{ d.filename }}<div class="pull-right">时间: {{ d.time }}</div></li>
+                    </ul>
                 </div>
-                <!-- List group -->
-                <ul class="list-group">
-                    <li class="list-group-item">文件: {{ d.filename }}<div class="pull-right">时间: {{ d.time }}</div></li>
-                </ul>
-            </div>
 
-        {% endfor %}
-    {% endblock %}
-</div>
+            {% endfor %}
+            <nav aria-label="True" class="animated fadeInUp">
+                  <ul class="pager">
+                  <li class="previous {% if page.older == 'none' %}disabled{% endif %}"><a href="{% if page.older == 0 %}{{ url_for('index') }}{% else %}{% if page.older == 'none' %}#{% else %}{{ url_for('page', num=page.older )}}{% endif %}{% endif %}"><span aria-hidden="true">&larr;</span> Older</a></li>
+                  <li class="next"><a href="{{ url_for('page', num=page.newer) }}">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                  </ul>
+            </nav>
+
+    </div>
+        {% endblock %}
 
 
 {% block js2 %}
@@ -140,7 +148,10 @@ function openit(obj) {
 function checkit(obj) {
     var wid = obj.id;
     var data = {"id":wid};
-
+    var wid2 = document.getElementById(wid);
+    wid2.innerHTML = "正在检测..."
+    wid2.disabled = "disabled";
+/*
     $.ajax({
         type: 'POST',
         data: JSON.stringify(data),
@@ -151,6 +162,7 @@ function checkit(obj) {
             window.location.href="{{ url_for('index') }}"
         }
     });
+*/
 }
 </script>
 
