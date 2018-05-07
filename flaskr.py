@@ -30,6 +30,10 @@ def teardown_request(exception):
     g.db.commit()
     g.db.close()
 
+@app.route("/ttt/")
+def ttt():
+    return render_template("ttt.html")
+
 # 首页
 @app.route("/")
 def index():
