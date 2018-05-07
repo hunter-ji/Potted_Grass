@@ -97,23 +97,47 @@ def table(wid):
             result = statuss2[info["sid"]]
             result = re.sub("\'", "\"", result)
             result = json.loads(result)
-            lencode = result[str(len(result.keys()))]["lencode"]
-            info["lencode"] = lencode
+            result_length = len(result.keys())
+            lencode = result[str(result_length)]["lencode"]
+            if result_length == 1:
+                lencode_old = "4"
+            else:
+                lencode_old = result[str( result_length-1 )]["lencode"]
+            if int(lencode) == int(lencode_old):
+                info["lencode"] = "<p class='text-danger'>" + lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode + "</p>"
+            else:
+                info["lencode"] = lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode
         elif status == "1":
             d = "<p class='text-warning'>运行失败</p>"
             result = statuss2[info["sid"]]
             result = re.sub("\'", "\"", result)
             result = json.loads(result)
-            lencode = result[str(len(result.keys()))]["lencode"]
-            info["lencode"] = lencode
+            result_length = len(result.keys())
+            lencode = result[str(result_length)]["lencode"]
+            if result_length == 1:
+                lencode_old = "4"
+            else:
+                lencode_old = result[str( result_length-1 )]["lencode"]
+            if int(lencode) == int(lencode_old):
+                info["lencode"] = "<p class='text-danger'>" + lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode + "</p>"
+            else:
+                info["lencode"] = lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode
         elif status == "2":
             result = statuss2[info["sid"]]
             result = re.sub("\'", "\"", result)
-            result = json.loads(result)
-            r = result[str(len(result.keys()))]
+            result_r = json.loads(result)
+            result_length = len(result_r.keys())
+            r = result_r[str(result_length)]
             result = r["result"]
             lencode = r["lencode"]
-            info["lencode"] = lencode
+            if result_length == 1:
+                lencode_old = "4"
+            else:
+                lencode_old = result_r[str( result_length-1 )]["lencode"]
+            if int(lencode) == int(lencode_old):
+                info["lencode"] = "<p class='text-danger'>" + lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode + "</p>"
+            else:
+                info["lencode"] = lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode
             result = base64.b64decode(result).decode()
             d = "输出 : %s</p>"%(str(result))
         elif status == "3":
@@ -157,7 +181,7 @@ def issuetask():
 
     # 拿到作业id
     cur2 = g.db.execute("select id from works where name = ?",[name])
-    data = int( [row[0] for row in cur2.fetchall()][0] )
+    data = int([row[0] for row in cur2.fetchall()][0])
     # 拿到学号
     cur3 = g.db.execute("select sid from students")
     sids = [row[0] for row in cur.fetchall()]
