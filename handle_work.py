@@ -56,7 +56,7 @@ def checkWORK(wid, path, sid, sdirname):
             lines = f.readlines()
             lines = [re.sub("\'", "\"", line) for line in lines]
             # 计算行数,并且除去空白行数
-            len_thecode = [line for line in lines if line != '\n']
+            len_thecode = [line for line in lines if line != '\n' and line != '    \n']
             len_code = len(len_thecode)
             lines = "".join(lines)
             lines = base64.b64encode(lines.encode("utf-8")).decode()

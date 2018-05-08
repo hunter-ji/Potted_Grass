@@ -30,9 +30,11 @@ def teardown_request(exception):
     g.db.commit()
     g.db.close()
 
-@app.route("/ttt/")
-def ttt():
-    return render_template("ttt.html")
+@app.route("/testpage/")
+def testpage():
+    cur = g.db.execute("select * from works order by id desc limit 3")
+    data = [dict(id=row[0], name=row[1], filename=row[2], time=row[3]) for row in cur.fetchall()]
+    return render_template("testpage.html", data=data)
 
 # 首页
 @app.route("/")
@@ -41,9 +43,36 @@ def index():
         return redirect("login")
     cur = g.db.execute("select * from works order by id desc limit 3")
     data = [dict(id=row[0], name=row[1], filename=row[2], time=row[3]) for row in cur.fetchall()]
-    return render_template("index.html", data=data)
+    page = {
+            "older": "none",
+            "newer": 1
+            }
+    return render_template("index.html", data=data, page=page)
 
-# 获取每次作业情况
+# 分页
+@app.route('/page/<int:num>/')
+def page(num):
+    if not session.get('logged_in'):
+        return redirect("login")
+    if num == 0:
+        return redirect(url_for('index'))
+    elif num > 0:
+        pagenum = num * 3
+        cur = g.db.execute("select * from works order by id desc limit ?, 3",[pagenum])
+        data = [dict(id=row[0], name=row[1], filename=row[2], time=row[3]) for row in cur.fetchall()]
+        if num == 0:
+            older = 'none'
+        else:
+            older = num - 1
+        page = {
+                "older": older,
+                "newer": num + 1
+                }
+        return render_template('index.html', data=data, page=page)
+    else:
+        return render_template('404.html')
+
+# 首页每个表格从此获取每次作业情况
 @app.route("/table/<int:wid>/", methods=["GET", "POST"])
 def table(wid):
     if not session.get('logged_in'):
@@ -68,23 +97,47 @@ def table(wid):
             result = statuss2[info["sid"]]
             result = re.sub("\'", "\"", result)
             result = json.loads(result)
-            lencode = result[str(len(result.keys()))]["lencode"]
-            info["lencode"] = lencode
+            result_length = len(result.keys())
+            lencode = result[str(result_length)]["lencode"]
+            if result_length == 1:
+                lencode_old = "4"
+            else:
+                lencode_old = result[str( result_length-1 )]["lencode"]
+            if int(lencode) == int(lencode_old):
+                info["lencode"] = "<p class='text-danger'>" + lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode + "</p>"
+            else:
+                info["lencode"] = lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode
         elif status == "1":
             d = "<p class='text-warning'>运行失败</p>"
             result = statuss2[info["sid"]]
             result = re.sub("\'", "\"", result)
             result = json.loads(result)
-            lencode = result[str(len(result.keys()))]["lencode"]
-            info["lencode"] = lencode
+            result_length = len(result.keys())
+            lencode = result[str(result_length)]["lencode"]
+            if result_length == 1:
+                lencode_old = "4"
+            else:
+                lencode_old = result[str( result_length-1 )]["lencode"]
+            if int(lencode) == int(lencode_old):
+                info["lencode"] = "<p class='text-danger'>" + lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode + "</p>"
+            else:
+                info["lencode"] = lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode
         elif status == "2":
             result = statuss2[info["sid"]]
             result = re.sub("\'", "\"", result)
-            result = json.loads(result)
-            r = result[str(len(result.keys()))]
+            result_r = json.loads(result)
+            result_length = len(result_r.keys())
+            r = result_r[str(result_length)]
             result = r["result"]
             lencode = r["lencode"]
-            info["lencode"] = lencode
+            if result_length == 1:
+                lencode_old = "4"
+            else:
+                lencode_old = result_r[str( result_length-1 )]["lencode"]
+            if int(lencode) == int(lencode_old):
+                info["lencode"] = "<p class='text-danger'>" + lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode + "</p>"
+            else:
+                info["lencode"] = lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode
             result = base64.b64decode(result).decode()
             d = "输出 : %s</p>"%(str(result))
         elif status == "3":
@@ -128,7 +181,7 @@ def issuetask():
 
     # 拿到作业id
     cur2 = g.db.execute("select id from works where name = ?",[name])
-    data = int( [row[0] for row in cur2.fetchall()][0] )
+    data = int([row[0] for row in cur2.fetchall()][0])
     # 拿到学号
     cur3 = g.db.execute("select sid from students")
     sids = [row[0] for row in cur.fetchall()]
@@ -185,18 +238,18 @@ def details(wid, sid):
     content = re.sub("\'", "\"", content)
     data = json.loads(content)
     content = []
-    for i in data:
-        L = {}
-        r = data[i]["result"]
-        data[i]["result"] = base64.b64decode(r).decode()
-        m = data[i]["message"]
-        data[i]["message"] = base64.b64decode(m).decode()
-        if "code" in data[i]:
-            c = data[i]["code"]
-            a = base64.b64decode(c).decode()
-            data[i]["code"] = base64.b64decode(a).decode()
-        L[i] = data[i]
-        content.append(L)
+    i = str(len(data))
+    L = {}
+    r = data[i]["result"]
+    data[i]["result"] = base64.b64decode(r).decode()
+    m = data[i]["message"]
+    data[i]["message"] = base64.b64decode(m).decode()
+    if "code" in data[i]:
+        c = data[i]["code"]
+        a = base64.b64decode(c).decode()
+        data[i]["code"] = base64.b64decode(a).decode()
+    L[i] = data[i]
+    content.append(L)
     return render_template("details.html", w=w, s=s, content=content)
 #    return redirect(url_for("index"))
 
@@ -229,6 +282,7 @@ def logout():
     session.pop('username')
     return redirect(url_for('index'))
 
+# 404页面
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404

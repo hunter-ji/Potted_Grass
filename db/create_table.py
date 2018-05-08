@@ -10,7 +10,8 @@ conn.execute('''
 create table students(
 id integer primary key autoincrement,
 sid  int,
-sname char(4)
+sname char(4),
+sclass char(7)
 );''')
 
 # 管理者
