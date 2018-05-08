@@ -72,7 +72,7 @@ def page(num):
     else:
         return render_template('404.html')
 
-# 获取每次作业情况
+# 首页每个表格从此获取每次作业情况
 @app.route("/table/<int:wid>/", methods=["GET", "POST"])
 def table(wid):
     if not session.get('logged_in'):
@@ -238,18 +238,18 @@ def details(wid, sid):
     content = re.sub("\'", "\"", content)
     data = json.loads(content)
     content = []
-    for i in data:
-        L = {}
-        r = data[i]["result"]
-        data[i]["result"] = base64.b64decode(r).decode()
-        m = data[i]["message"]
-        data[i]["message"] = base64.b64decode(m).decode()
-        if "code" in data[i]:
-            c = data[i]["code"]
-            a = base64.b64decode(c).decode()
-            data[i]["code"] = base64.b64decode(a).decode()
-        L[i] = data[i]
-        content.append(L)
+    i = str(len(data))
+    L = {}
+    r = data[i]["result"]
+    data[i]["result"] = base64.b64decode(r).decode()
+    m = data[i]["message"]
+    data[i]["message"] = base64.b64decode(m).decode()
+    if "code" in data[i]:
+        c = data[i]["code"]
+        a = base64.b64decode(c).decode()
+        data[i]["code"] = base64.b64decode(a).decode()
+    L[i] = data[i]
+    content.append(L)
     return render_template("details.html", w=w, s=s, content=content)
 #    return redirect(url_for("index"))
 
