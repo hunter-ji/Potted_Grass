@@ -47,7 +47,7 @@ def index():
             "older": "none",
             "newer": 1
             }
-    return render_template("testpage.html", data=data, page=page)
+    return render_template("index.html", data=data, page=page)
 
 # 分页
 @app.route('/page/<int:num>/')
@@ -114,6 +114,10 @@ def table(wid):
             result = json.loads(result)
             result_length = len(result.keys())
             lencode = result[str(result_length)]["lencode"]
+            rr = result[str(result_length)]["message"]
+            rr = base64.b64decode(rr).decode()
+            if "AssertionError" in rr:
+                d = "<p class='text-warning'>验证失败</p>"
             if result_length == 1:
                 lencode_old = "4"
             else:
@@ -144,7 +148,7 @@ def table(wid):
             d = "<p class='text-warning'>找不到文件</p>"
         else:
             d = "未检查"
-        details = "<a id='%s/%s' onclick=detailpage(this) href='javascript:;'>%s</a>"%(str(wid), str(info["sid"]), d)
+        details = "<a target='_black' href='/details/%s/%s/'>%s</a>"%(str(wid), str(info["sid"]), d)
         if d == "未检查":
             details = d
         info["details"] = details
@@ -282,7 +286,6 @@ def detailpage(wid, sid):
     totaldata1.update(s)
     totaldata = totaldata1.copy()
     totaldata.update(data[i])
-    pprint(totaldata)
     return jsonify(totaldata)
 
 # 登录
@@ -342,7 +345,6 @@ def handle():
 def deletework():
     data = request.get_data()
     theid = int(json.loads(data)['id'])
-    print(theid)
 
     cur = g.db.execute("select filename from works where id = ?",[theid])
     filename = [row[0] for row in cur.fetchall()][0]
