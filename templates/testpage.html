@@ -8,117 +8,292 @@
 <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
 <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
 <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script> -->
+
+<!-- highlight.js -->
+<link rel="stylesheet" href="/static/styles/github.css">
+<script src="/static/js/highlight.pack.js"></script>
 {% endblock %}
 
 {% block main %}
-    <div class="outside">
-        <div class="inside">
+    <div class="row">
+        <div id="leftside" class="container">
+            <div class="main-content">
                 <div>
-                {% if error %}
-                    <div class="alert alert-danger" role="alert">
-                        <p class=error><strong>Error:</strong> {{ error }}
-                        </div>
-                    {% endif %}
-                </div>
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            <p class=error><strong>Error:</strong> {{ error }}
+                            </div>
+                        {% endif %}
+                    </div>
 
-                <div class="area">
+                    <div class="area">
+                        <div class="page-header animated fadeInUp">
+                            <img src="/static/img/release.png" class="img-responsive" alt="Release">
+                        </div>
+
+
+                        <div class="panel panel-default animated fadeInUp">
+                            <div class="panel-heading">
+                                作业发布
+                                <div class="pull-right">
+                                    <p><a id="open" href="javascript:;"><i id="ii" class="fa fa-chevron-down" aria-hidden="true"></i> </a></p>
+                                </div>
+                            </div>
+                            <div id="panel" class="panel-body" style="display:none;">
+                                <form role="form" action="{{ url_for('issuetask') }}" method=post>
+                                    <div class="form-group">
+                                        <label for="exampleInputText">作业名称</label>
+                                        <input type="text" class="form-control" id="exampleInputText" placeholder="exmaple_work_name" name="name">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exampleInputText">文件名</label>
+                                        <input type="text" class="form-control" id="exampleInputText" placeholder="example_filename" name="filename">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exampleInputText">断言</label>
+                                        <input type="text" class="form-control" id="exampleInputText" placeholder="assert w.heihei() == 'test'" name="parameter">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-info">发布</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="page-header animated fadeInUp">
-                        <img src="/static/img/release.png" class="img-responsive" alt="Release">
+                        <img src="/static/img/details.png" class="img-responsive" alt="Details">
                     </div>
 
-
-                    <div class="panel panel-default animated fadeInUp">
-                        <div class="panel-heading">
-                            作业发布
-                            <div class="pull-right">
-                                <p><a id="open" href="javascript:;"><i id="ii" class="fa fa-chevron-down" aria-hidden="true"></i> </a></p>
+                    {% for d in data %}
+                        <div class="panel panel-default animated fadeInUp">
+                            <div class="panel-heading">作业: {{ d.name }}
+                                <div class="pull-right">
+                                    <p><a id="{{ d.name }}" href="javascript:;" onclick=openit(this)><i id="i{{ d.name }}" class="fa fa-chevron-down" aria-hidden="true"></i> </a></p>
+                                </div>
                             </div>
+                            <div class="panel-body" style="display:none;" id="panel{{ d.name }}">
+                                <button class="btn btn-info" id={{ d.id }} onclick=checkit(this)>检测</button>
+                                <button class="btn btn-danger" id={{ d.id }} onclick=deleteit(this)>删除</button>
+                                <div class="table-responsive">
+                                    <table data-toggle="table"
+                                        data-undefined-text="-"
+                                        data-pagination="true"
+                                        data-search="true"
+                                        data-show-toggle="true"
+                                        data-show-refresh="true"
+                                        data-show-pagination-switch="true"
+                                        data-show-pagination-switch="true"
+                                        data-show-columns="true"
+                                        data-striped="true"
+                                        data-url="/table/{{ d.id }}"
+                                        data-page-size=25
+                                        >
+                                        <thead>
+                                            <tr>
+                                                <th data-field="sid">学号</th>
+                                                <th data-field="name">名字</th>
+                                                <th data-field="lencode">行数</th>
+                                                <th data-field="details">详情</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- List group -->
+                            <ul class="list-group">
+                                <li class="list-group-item">文件: {{ d.filename }}<div class="pull-right">时间: {{ d.time }}</div></li>
+                            </ul>
                         </div>
-                        <div id="panel" class="panel-body" style="display:none;">
-                            <form role="form" action="{{ url_for('issuetask') }}" method=post>
-                                <div class="form-group">
-                                    <label for="exampleInputText">作业名称</label>
-                                    <input type="text" class="form-control" id="exampleInputText" placeholder="exmaple_work_name" name="name">
-                                </div>
 
-                                <div class="form-group">
-                                    <label for="exampleInputText">文件名</label>
-                                    <input type="text" class="form-control" id="exampleInputText" placeholder="example_filename" name="filename">
-                                </div>
+                    {% endfor %}
 
-                                <div class="form-group">
-                                    <label for="exampleInputText">断言</label>
-                                    <input type="text" class="form-control" id="exampleInputText" placeholder="assert w.heihei() == 'test'" name="parameter">
-                                </div>
+                </div>
 
-                                <button type="submit" class="btn btn-info">发布</button>
-                            </form>
+            </div>
+            <div id="rightside" class="hidden">
+                <div class="rightinfo">
+                    <div class="area main-content">
+                        <div class="panel panel-default animated fadeInUp">
+                            <div class="panel-body">
+                                <div id="flow"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="page-header animated fadeInUp">
-                    <img src="/static/img/details.png" class="img-responsive" alt="Details">
-                </div>
-
-                {% for d in data %}
-                    <div class="panel panel-default animated fadeInUp">
-                        <div class="panel-heading">作业: {{ d.name }}
-                            <div class="pull-right">
-                                <p><a id="{{ d.name }}" href="javascript:;" onclick=openit(this)><i id="i{{ d.name }}" class="fa fa-chevron-down" aria-hidden="true"></i> </a></p>
-                            </div>
-                        </div>
-                        <div class="panel-body" style="display:none;" id="panel{{ d.name }}">
-                            <button class="btn btn-info" id={{ d.id }} onclick=checkit(this)>检测</button>
-                            <button class="btn btn-danger" id={{ d.id }} onclick=deleteit(this)>删除</button>
-                            <div class="table-responsive">
-                                <table data-toggle="table"
-                                    data-undefined-text="-"
-                                    data-pagination="true"
-                                    data-search="true"
-                                    data-show-toggle="true"
-                                    data-show-refresh="true"
-                                    data-show-pagination-switch="true"
-                                    data-show-pagination-switch="true"
-                                    data-show-columns="true"
-                                    data-striped="true"
-                                    data-url="/table/{{ d.id }}"
-                                    data-page-size=25
-                                    >
-                                    <thead>
-                                        <tr>
-                                            <th data-field="sid">学号</th>
-                                            <th data-field="name">名字</th>
-                                            <th data-field="lencode">行数</th>
-                                            <th data-field="details">详情</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                        </div>
-                        <!-- List group -->
-                        <ul class="list-group">
-                            <li class="list-group-item">文件: {{ d.filename }}<div class="pull-right">时间: {{ d.time }}</div></li>
-                        </ul>
-                    </div>
-
-                {% endfor %}
-            {% endblock %}
-        <div class="inside">
-                <div class="area">
-                  <div class="panel panel-info">
-                    <div class="panel-body">
-                      Panel content
-                    </div>
-                    <div class="panel-footer">Panel footer</div>
-                  </div>
-                </div>
+            </div>
         </div>
-    </div>
-    </div>
+    {% endblock %}
 
 
 {% block js2 %}
+<script>
+    function fullscreen() {
+        var leftside = document.getElementById("leftside");
+        leftside.setAttribute('class', 'hidden');
+        var rightside = document.getElementById("rightside");
+        rightside.setAttribute('class', 'container');
+    }
+
+    function cancelb() {
+        var rightside = document.getElementById("leftside");
+        leftside.setAttribute("class", "container");
+        var rightside = document.getElementById("rightside");
+        rightside.setAttribute('class', 'hidden');
+    }
+</script>
+<script>
+function showinfo(adict) {
+    var flow = document.getElementById("flow");
+    flow.innerHTML = " ";
+
+    // 全屏键
+    var fullscreen = document.createElement("button");
+    fullscreen.setAttribute("type", "submit");
+    fullscreen.setAttribute("class", "btn btn-info");
+    fullscreen.setAttribute("onclick", "fullscreen();")
+    var f_text = document.createTextNode("全屏");
+    fullscreen.appendChild(f_text);
+
+    // 隐藏键
+    var cancelb = document.createElement("button");
+    cancelb.setAttribute("type", "submit");
+    cancelb.setAttribute("class", "btn btn-default");
+    cancelb.setAttribute("onclick", "cancelb();")
+    var c_text = document.createTextNode("隐藏");
+    cancelb.appendChild(c_text);
+
+    var h4 = document.createElement("h4");
+    info = adict["info"];
+    if (info == "0") {
+        status = "错误"
+    }
+    if (info == "1") {
+        status = "失败"
+    }
+    if (info == "2") {
+        status = "成功"
+    }
+    if (info == "3") {
+        status = "找不到文件"
+    }
+
+    if (info != "3") {
+
+        result = adict["result"];
+        codecode = adict["code"];
+        lencodelencode = adict["lencode"];
+        timetime = adict["time"];
+
+        //运行结果的判断
+        var text1 = document.createTextNode(status);
+        var text_status = document.createTextNode("运行结果");
+        var pre_status = document.createElement("pre");
+        pre_status.appendChild(text1);
+        h4.appendChild(text_status);
+        h4.appendChild(pre_status);
+
+        //运行结果
+        var h42 = document.createElement("h4");
+        var text_info = document.createTextNode("运行结果");
+        var pre2 = document.createElement("pre");
+        var text2 = document.createTextNode(result);
+        pre2.appendChild(text2);
+        h42.appendChild(text_info);
+        h42.appendChild(pre2);
+
+        //代码
+        var code = document.createElement("pre");
+        var pre = document.createElement("code");
+        pre.setAttribute("class", "python");
+        var code1 = document.createTextNode(codecode);
+        var text_code = document.createTextNode("代码");
+        pre.appendChild(code1);
+        code.appendChild(pre);
+
+        //行数
+        var lencode = document.createElement("h4");
+        var text3 = document.createTextNode("行数");
+        var pre3 = document.createElement("pre");
+        var num = document.createTextNode(lencodelencode);
+        pre3.appendChild(num);
+        lencode.appendChild(text3);
+        lencode.appendChild(pre3);
+
+        //时间
+        var time = document.createElement("h4");
+        var texttime = document.createTextNode("检测时间:");
+        var pre_time = document.createElement("pre");
+        var text4 = document.createTextNode(timetime);
+        pre_time.appendChild(text4);
+        time.appendChild(texttime);
+        time.appendChild(pre_time);
+
+        var ff = document.createElement("div");
+
+        ff.appendChild(fullscreen);
+        ff.appendChild(cancelb);
+        ff.appendChild(h4);
+        ff.appendChild(h42);
+        ff.appendChild(text_code);
+        ff.appendChild(code);
+        ff.appendChild(lencode);
+        ff.appendChild(time);
+        flow.appendChild(ff);
+
+    }
+    else {
+        result = adict["result"];
+        code = adict["code"];
+
+        //运行结果的判断
+        var text1 = document.createTextNode(status);
+        h4.appendChild(text1);
+
+        //运行结果
+        var h42 = document.createElement("h4");
+        var code2 = document.createElement("code");
+        var text2 = document.createTextNode(result);
+        code2.appendChild(text2);
+        h42.appendChild(code2);
+
+        flow.appendChild(h4);
+        flow.appendChild(h42);
+    }
+
+}
+function detailpage(obj) {
+    var wid = obj.id;
+    console.log(wid);
+    var leftside = document.getElementById("leftside");
+    leftside.setAttribute('class', 'col-md-6');
+    var rightside = document.getElementById("rightside");
+    rightside.setAttribute('class', 'col-md-6');
+
+    data = {"mes":"nothing"}
+
+    theurl = "/detailpage/" + wid + "/";
+    $.ajax({
+        type: 'POST',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=UTF-8',
+        url: theurl,
+        success: function(msg) {
+            console.log('success');
+            console.log(msg);
+        //    var flow = document.getElementById("flow");
+        //    flow.innerHTML = " "
+            showinfo(msg);
+        }
+    });
+}
+</script>
+
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
 <script type="text/javascript">
 $(document).ready(function(){
   $("#open").click(function(){

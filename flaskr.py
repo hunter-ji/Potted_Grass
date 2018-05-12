@@ -47,7 +47,7 @@ def index():
             "older": "none",
             "newer": 1
             }
-    return render_template("index.html", data=data, page=page)
+    return render_template("testpage.html", data=data, page=page)
 
 # 分页
 @app.route('/page/<int:num>/')
@@ -144,7 +144,7 @@ def table(wid):
             d = "<p class='text-warning'>找不到文件</p>"
         else:
             d = "未检查"
-        details = "<a target='_black' href='/details/%s/%s/'>%s</a>"%(str(wid), str(info["sid"]), d)
+        details = "<a id='%s/%s' onclick=detailpage(this) href='javascript:;'>%s</a>"%(str(wid), str(info["sid"]), d)
         if d == "未检查":
             details = d
         info["details"] = details
@@ -252,6 +252,38 @@ def details(wid, sid):
     content.append(L)
     return render_template("details.html", w=w, s=s, content=content)
 #    return redirect(url_for("index"))
+
+# 详细页面信息提供的json
+@app.route("/detailpage/<int:wid>/<int:sid>/", methods=["POST"])
+def detailpage(wid, sid):
+    if not session.get('logged_in'):
+        return redirect("login")
+    cur = g.db.execute("select content from status where wid = ? and sid = ?",[wid, sid])
+    data = [row[0] for row in cur.fetchall()]
+#    if data == ["info"]:
+    w = g.db.execute("select * from works where id = ?",[wid])
+    w = [dict(id=row[0], name=row[1], filename=row[2], time=row[3]) for row in w.fetchall()][0]
+    s = g.db.execute("select * from students where sid = ?",[sid])
+    s = [dict(id=row[0], sid=row[1], sname=row[2]) for row in s.fetchall()][0]
+    content = g.db.execute("select content from status where wid = ? and sid = ?",[wid, sid])
+    content = [row[0] for row in content.fetchall()][0]
+    content = re.sub("\'", "\"", content)
+    data = json.loads(content)
+    i = str(len(data))
+    r = data[i]["result"]
+    data[i]["result"] = base64.b64decode(r).decode()
+    m = data[i]["message"]
+    data[i]["message"] = base64.b64decode(m).decode()
+    if "code" in data[i]:
+        c = data[i]["code"]
+        a = base64.b64decode(c).decode()
+        data[i]["code"] = base64.b64decode(a).decode()
+    totaldata1 = w.copy()
+    totaldata1.update(s)
+    totaldata = totaldata1.copy()
+    totaldata.update(data[i])
+    pprint(totaldata)
+    return jsonify(totaldata)
 
 # 登录
 @app.route("/login/", methods=["GET", "POST"])
