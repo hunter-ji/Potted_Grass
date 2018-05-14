@@ -158,10 +158,22 @@ def table(wid):
                 #  "id": "0",
                 #  "sid": "15080930211",
                 #  "name": "kuari",
+                #  "lencode": "<p class='text-danger'> 4<i class='fa fa-arrow-right' aria-hidden='true'></i> 4</p>"
                 #  "details": "<a target='_black' href='/details/1/15080930211/'>details</a>"
                 #  }
 #      ]
-    return jsonify(data)
+    sort_data = []
+    for i in range(0,5):
+        for row in data:
+            html = row["lencode"]
+            if "<p" in html:
+                sort_data.append(row)
+                data.remove(row)
+    sort_data = sort_data + data
+    len_sort_data = len(sort_data) - 1
+    for aid in range(0,len_sort_data):
+        sort_data[aid]["id"] = aid
+    return jsonify(sort_data)
 
 # 发布作业
 @app.route("/issuetask/", methods=["POST"])
