@@ -9,7 +9,7 @@ import time
 import base64
 from multiprocessing import Pool
 from main import MAIN
-from handle_work import checkWORK
+from handle_work import checkWORK, getCODE
 from pprint import pprint
 
 DATABASE = 'class.db'
@@ -73,8 +73,8 @@ def page(num):
         return render_template('404.html')
 
 # 首页每个表格从此获取每次作业情况
-@app.route("/table/<int:wid>/", methods=["GET", "POST"])
-def table(wid):
+@app.route("/table/<int:wid>/<wdir>/<int:ver>", methods=["GET", "POST"])
+def table(wid, wdir, ver):
     if not session.get('logged_in'):
         return redirect("login")
     works = g.db.execute("select * from students")
@@ -82,7 +82,6 @@ def table(wid):
 
     statuss = g.db.execute("select sid, status, content from status where wid = ?",[wid])
     statuss = [dict(sid=row[0], status=row[1], content=row[2]) for row in statuss.fetchall()]
-#    statuss = [dict( row["sid"]=row["status"] ) for row in statuss]
     statuss1 = {}
     statuss2 = {}
     for row in statuss:
@@ -103,10 +102,11 @@ def table(wid):
                 lencode_old = "4"
             else:
                 lencode_old = result[str( result_length-1 )]["lencode"]
-            if int(lencode) == int(lencode_old):
-                info["lencode"] = "<p class='text-danger'>" + lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode + "</p>"
-            else:
-                info["lencode"] = lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode
+            if ver == 2:
+                lencode_old = lencode
+                # 即时获取代码行数
+                lencode = getCODE(info["sid"], wdir)["lencode"]
+            lencode_diff = int(lencode) - int(lencode_old)
         elif status == "1":
             d = "<p class='text-warning'>运行失败</p>"
             result = statuss2[info["sid"]]
@@ -118,10 +118,11 @@ def table(wid):
                 lencode_old = "4"
             else:
                 lencode_old = result[str( result_length-1 )]["lencode"]
-            if int(lencode) == int(lencode_old):
-                info["lencode"] = "<p class='text-danger'>" + lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode + "</p>"
-            else:
-                info["lencode"] = lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode
+            if ver == 2:
+                lencode_old = lencode
+                # 即时获取代码行数
+                lencode = getCODE(info["sid"], wdir)["lencode"]
+            lencode_diff = int(lencode) - int(lencode_old)
         elif status == "2":
             result = statuss2[info["sid"]]
             result = re.sub("\'", "\"", result)
@@ -134,10 +135,11 @@ def table(wid):
                 lencode_old = "4"
             else:
                 lencode_old = result_r[str( result_length-1 )]["lencode"]
-            if int(lencode) == int(lencode_old):
-                info["lencode"] = "<p class='text-danger'>" + lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode + "</p>"
-            else:
-                info["lencode"] = lencode_old + " <i class='fa fa-arrow-right' aria-hidden='true'></i> " + lencode
+            if ver == 2:
+                lencode_old = lencode
+                # 即时获取代码行数
+                lencode = getCODE(info["sid"], wdir)["lencode"]
+            lencode_diff = int(lencode) - int(lencode_old)
             result = base64.b64decode(result).decode()
             d = "输出 : %s</p>"%(str(result))
         elif status == "3":
@@ -147,7 +149,90 @@ def table(wid):
         details = "<a target='_black' href='/details/%s/%s/'>%s</a>"%(str(wid), str(info["sid"]), d)
         if d == "未检查":
             details = d
-        info["details"] = details
+        filename = g.db.execute("select filename from works where id = %s"%(str(wid)))
+        filename = [ dict(filename=row[0]) for row in filename.fetchall() ][0]
+        lencode = "<a href='javascript:;' onclick=showcode(this) id='%s' name='%s'>%s</a>"%(str(info["sid"]), str(filename["filename"]),lencode)
+        info["lencode_diff"], info["lencode"], info["details"] = lencode_diff, lencode, details
+        data.append(info)
+#      data = [
+            #  {
+                #  "id": "0",
+                #  "sid": "15080930211",
+                #  "name": "kuari",
+                #  "details": "<a target='_black' href='/details/1/15080930211/'>details</a>"
+                #  }
+#      ]
+    return jsonify(data)
+
+# 即时刷新表格信息，不是检查
+@app.route("/retable/<int:wid>/", methods=["GET", "POST"])
+def retable(wid):
+    if not session.get('logged_in'):
+        return redirect("login")
+    works = g.db.execute("select * from students")
+    works = [dict(id=row[0], sid=row[1], name=row[2]) for row in works.fetchall()]
+
+    statuss = g.db.execute("select sid, status, content from status where wid = ?",[wid])
+    statuss = [dict(sid=row[0], status=row[1], content=row[2]) for row in statuss.fetchall()]
+    statuss1 = {}
+    statuss2 = {}
+    for row in statuss:
+        statuss1[row["sid"]] = row["status"]
+        statuss2[row["sid"]] = row["content"]
+    data = []
+    for info in works:
+        # 例如 status = 2
+        status = str(statuss1[info["sid"]])
+        if status == "0":
+            d = "<p class='text-danger'>运行错误</p>"
+            result = statuss2[info["sid"]]
+            result = re.sub("\'", "\"", result)
+            result = json.loads(result)
+            result_length = len(result.keys())
+            lencode = result[str(result_length)]["lencode"]
+            if result_length == 1:
+                lencode_old = "4"
+            else:
+                lencode_old = result[str( result_length-1 )]["lencode"]
+            lencode_diff = int(lencode) - int(lencode_old)
+        elif status == "1":
+            d = "<p class='text-warning'>运行失败</p>"
+            result = statuss2[info["sid"]]
+            result = re.sub("\'", "\"", result)
+            result = json.loads(result)
+            result_length = len(result.keys())
+            lencode = result[str(result_length)]["lencode"]
+            if result_length == 1:
+                lencode_old = "4"
+            else:
+                lencode_old = result[str( result_length-1 )]["lencode"]
+            lencode_diff = int(lencode) - int(lencode_old)
+        elif status == "2":
+            result = statuss2[info["sid"]]
+            result = re.sub("\'", "\"", result)
+            result_r = json.loads(result)
+            result_length = len(result_r.keys())
+            r = result_r[str(result_length)]
+            result = r["result"]
+            lencode = r["lencode"]
+            if result_length == 1:
+                lencode_old = "4"
+            else:
+                lencode_old = result_r[str( result_length-1 )]["lencode"]
+            lencode_diff = int(lencode) - int(lencode_old)
+            result = base64.b64decode(result).decode()
+            d = "输出 : %s</p>"%(str(result))
+        elif status == "3":
+            d = "<p class='text-warning'>找不到文件</p>"
+        else:
+            d = "未检查"
+        details = "<a target='_black' href='/details/%s/%s/'>%s</a>"%(str(wid), str(info["sid"]), d)
+        if d == "未检查":
+            details = d
+        filename = g.db.execute("select filename from works where id = %s"%(str(wid)))
+        filename = [ dict(filename=row[0]) for row in filename.fetchall() ][0]
+        lencode = "<a href='javascript:;' onclick=showcode(this) id='%s' name='%s'>%s</a>"%(str(info["sid"]), str(filename["filename"]),lencode)
+        info["lencode_diff"], info["lencode"], info["details"] = lencode_diff, lencode, details
         data.append(info)
 #      data = [
             #  {
@@ -319,7 +404,20 @@ def deletework():
     g.db.execute("delete from works where id = ?",[theid])
     g.db.execute("delete from status where wid = ?",[theid])
     g.db.commit()
-    return jsonify({"info":"success"}) 
+    return jsonify({"info":"success"})
+
+# 即时查看代码
+@app.route("/getcode", methods=["GET","POST"])
+def getcode():
+    info = request.get_data()
+    info = json.loads(info)
+    sid = info["sid"]
+    sdirname = info["sdirname"]
+    data = getCODE(sid, sdirname)
+    sname = g.db.execute("select sname from students where sid = %s"%(sid))
+    sname = [ dict(sname=row[0]) for row in sname ][0]
+    data["sname"] = sname["sname"]
+    return jsonify(data)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+    app.run(host='0.0.0.0', port=5000, threaded=True)

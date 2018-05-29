@@ -5,8 +5,14 @@
 {% endblock %}
 
 {% block js %}
+<link rel="stylesheet" href="/static/styles/github.css">
+
+<script src="/static/js/highlight.pack.js"></script>
+
 <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
 <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+
+
 {% endblock %}
 
 {% block main %}
@@ -68,26 +74,30 @@
                     </div>
                     <div class="panel-body" style="display:none;" id="panel{{ d.name }}">
                         <button class="btn btn-info" id={{ d.id }} onclick=checkit(this)>检测</button>
-                        <button class="btn btn-danger" id={{ d.id }} onclick=trydeleteit(this)>删除</button>
+                        <button class="btn btn-danger" id={{ d.id }} onclick=deleteit(this)>删除</button>
+                        <button class="btn btn-default" id={{ d.id }} name={{ d.name }} onclick=refreshit(this)>刷新</button>
                         <div class="table-responsive">
-                            <table data-toggle="table"
+                            <table id="table_{{ d.id }}"
+                                data-toggle="table"
                                 data-undefined-text="-"
                                 data-pagination="true"
                                 data-search="true"
                                 data-show-toggle="true"
                                 data-show-refresh="true"
                                 data-show-pagination-switch="true"
-                                data-show-pagination-switch="true"
                                 data-show-columns="true"
                                 data-striped="true"
-                                data-url="/table/{{ d.id }}"
+                                data-url="/table/{{ d.id }}/{{ d.name }}/1"
                                 data-page-size=25
+                                data-sortable="true"
+ 	                        data-sort-name="lencode_diff"
                                 >
                                 <thead>
                                     <tr>
                                         <th data-field="sid">学号</th>
                                         <th data-field="name">名字</th>
                                         <th data-field="lencode">行数</th>
+                                        <th data-field="lencode_diff">差异</th>
                                         <th data-field="details">详情</th>
                                     </tr>
                                 </thead>
@@ -103,16 +113,82 @@
             {% endfor %}
             <nav aria-label="True" class="animated fadeInUp">
                   <ul class="pager">
-                  <li class="previous {% if page.older == 'none' %}disabled{% endif %}"><a href="{% if page.older == 0 %}{{ url_for('index') }}{% else %}{% if page.older == 'none' %}#{% else %}{{ url_for('page', num=page.older )}}{% endif %}{% endif %}"><span aria-hidden="true">&larr;</span> Older</a></li>
-                  <li class="next"><a href="{{ url_for('page', num=page.newer) }}">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                  <li class="previous {% if page.older == 'none' %}disabled{% endif %}"><a href="{% if page.older == 0 %}{{ url_for('index') }}{% else %}{% if page.older == 'none' %}#{% else %}{{ url_for('page', num=page.older )}}{% endif %}{% endif %}"><span aria-hidden="true">&larr;</span> Newer</a></li>
+                  <li class="next"><a href="{{ url_for('page', num=page.newer) }}">Older <span aria-hidden="true">&rarr;</span></a></li>
                   </ul>
             </nav>
 
     </div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel"></h4>
+      </div>
+      <div class="modal-body">
+          <p>代码</p>
+          <pre><code class="python" id="getcode"></code></pre>
+          <p>行数</p>
+          <pre><code id="getlencode"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+          <!-- 模态框2 -->
+          <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                              &times;
+                          </button>
+                          <h4 class="modal-title" id="myModalLabel">删除此作业</h4>
+                      </div>
+                      <div class="modal-body">
+                            <p>是否确认?</p>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                          <button type="button" class="btn btn-primary" id="verify">确认</button>
+                      </div>
+                  </div><!-- /.modal-content -->
+              </div><!-- /.modal -->
+          </div>
         {% endblock %}
 
 
 {% block js2 %}
+
+<script>
+//$("table").bootstrapTable(sort.bs.table);
+function InitSubTable(index, row, $detail) {
+var parentid = row.MENU_ID;
+var cur_table = $detail.html('<table></table>').find('table');
+$(cur_table).bootstrapTable({
+    url: 'JsonAgm?REG_DOC_SN=' + row.REG_DOC_SN,
+    method: 'get',
+    queryParams: { strParentID: parentid },
+    ajaxOptions: { strParentID: parentid },
+    clickToSelect: true,
+    //detailView: true,//父子表
+    uniqueId: "AGM_ID",
+    pageSize: 10,
+    pageList: [10, 25],
+    columns: [],
+    //无线循环取子表，直到子表里面没有记录
+    //onExpandRow: function (index, row, $Subdetail) {
+    //    InitSubTable(index, row, $Subdetail);
+    //}
+});
+};
+</script>
 <script type="text/javascript">
 $(document).ready(function(){
   $("#open").click(function(){
@@ -157,7 +233,6 @@ function checkit(obj) {
         contentType: 'application/json; charset=UTF-8',
         url: '/handle',
         success: function(data) {
-            console.log('success');
             window.location.href="{{ url_for('index') }}"
         }
     });
@@ -168,17 +243,54 @@ function checkit(obj) {
 function deleteit(obj) {
     var wid = obj.id;
     var data = {"id":wid};
+    $('#myModal2').modal('show');
+    $("#verify").click(function(){
+
+        $.ajax({
+            type: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json; charset=UTF-8',
+            url: '/deletework',
+            success: function(data) {
+                window.location.href="{{ url_for('index') }}"
+            }
+        });
+    });
+}
+</script>
+<script>
+function showcode(obj) {
+    var sid = obj.id;
+    var sdirname = obj.name;
+
+    data = {
+        "sid": sid,
+        "sdirname": sdirname
+    };
 
     $.ajax({
         type: 'POST',
         data: JSON.stringify(data),
         contentType: 'application/json; charset=UTF-8',
-        url: '/deletework',
+        url: '/getcode',
         success: function(data) {
-            console.log('success');
-            window.location.href="{{ url_for('index') }}"
+
+            $("#myModalLabel").html(data["sname"]);
+            $("#getcode").html(data["code"]);
+            $("#getlencode").html(data["lencode"]);
+
+            $('#myModal').modal('show');
         }
     });
+
 }
+</script>
+<script>
+    function refreshit(obj) {
+        var wid = obj.id;
+        var wdir = obj.name;
+
+        $("#table_" + wid).bootstrapTable('refresh', {url: '/table/' + wid + '/' + wdir + '/2'});
+    }
 </script>
 {% endblock %}

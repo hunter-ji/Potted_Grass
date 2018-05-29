@@ -1,4 +1,6 @@
 {
+  "test/test_work10.py::test_work": true,
   "test_work.py": true,
-  "test_work1.py": true
+  "test_work1.py": true,
+  "test_work10.py": true
 }
